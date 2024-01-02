@@ -6,6 +6,10 @@ import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+import br.com.api.spring.controllers.PersonController;
 import br.com.api.spring.exceptions.ResourceNotFoundException;
 import br.com.api.spring.mapper.DozerMapper;
 import br.com.api.spring.models.PersonModel;
@@ -25,14 +29,14 @@ public class PersonService {
 
         var entity = DozerMapper.parseObject(person, PersonModel.class); 
         var vo = DozerMapper.parseObject(perRep.save(entity), PersonVO.class); 
-
+        vo.add(linkTo(methodOn(PersonController.class).findById(vo.getKey())).withSelfRel()); // add hateoas
         return vo;
     }
 
     public PersonVO update(PersonVO person) { 
         logger.info("Updating one person!");
 
-        var entity = perRep.findById(person.getId()) 
+        var entity = perRep.findById(person.getKey()) 
             .orElseThrow(() -> new ResourceNotFoundException("No records fpund for this ID!")); 
 
         entity.setFirstName(person.getFirstName());
@@ -41,14 +45,15 @@ public class PersonService {
         entity.setGender(person.getGender());
 
         var vo = DozerMapper.parseObject(perRep.save(entity), PersonVO.class); 
+        vo.add(linkTo(methodOn(PersonController.class).findById(vo.getKey())).withSelfRel()); // add hateoas
         return vo;
     }
 
     public void delete(Long id) { 
-        logger.info("deleting one person!");
+        logger.info("Deleting one person!");
 
         var entity = perRep.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("No records fpund for this ID!"));
+            .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID!"));
 
         perRep.delete(entity); 
     }
@@ -56,16 +61,22 @@ public class PersonService {
     public List<PersonVO> findAll() { 
         logger.info("Finding all people!");
 
-        return DozerMapper.parseListObjects(perRep.findAll(), PersonVO.class); 
+        var persons = DozerMapper.parseListObjects(perRep.findAll(), PersonVO.class); 
+        persons // percorrer a lista de pessoas e adicionar o link em cada uma
+            .stream()
+            .forEach(p -> p.add(linkTo(methodOn(PersonController.class).findById(p.getKey())).withSelfRel())); // add hateoas
+        return persons;
     }
 
     public PersonVO findById(Long id) {
         logger.info("Finding one person!"); 
 
         var entity = perRep.findById(id) 
-            .orElseThrow(() -> new ResourceNotFoundException("No records fpund for this ID!")); 
+            .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID!")); 
 
-        return DozerMapper.parseObject(entity, PersonVO.class);
+        var vo = DozerMapper.parseObject(entity, PersonVO.class);
+        vo.add(linkTo(methodOn(PersonController.class).findById(id)).withSelfRel()); 
+        return vo;
     }
 
 }
