@@ -87,15 +87,14 @@ public class PersonServiceTests {
 	}
 	
 	@Test
-	void testCreateWithNullPerson() { // para validar se a exception está ocorrendo como esperado no create
+	void testCreateWithNullPerson() { 
 		Exception exception = assertThrows(RequiredObjectIsNullException.class, () -> {
-			service.create(null); // essa chamada precisa retornar a exception 
+			service.create(null); 
 		});
 		
 		String expectedMessage = "It is not allowed to persist a null object!";
 		String actualMessage = exception.getMessage();
 		
-		// comparando a mensagem esperada com a atual
 		assertTrue(actualMessage.contains(expectedMessage));
 	}
 
@@ -126,7 +125,7 @@ public class PersonServiceTests {
 	}
 	
 	@Test
-	void testUpdateWithNullPerson() { // para validar se a exception está ocorrendo como esperado no update
+	void testUpdateWithNullPerson() { 
 		Exception exception = assertThrows(RequiredObjectIsNullException.class, () -> {
 			service.update(null);
 		});
@@ -149,16 +148,15 @@ public class PersonServiceTests {
 	
 	@Test
 	void testFindAll() {
-		List<PersonModel> list = input.mockEntityList(); // mockar uma lista
+		List<PersonModel> list = input.mockEntityList(); 
 		
-		when(repository.findAll()).thenReturn(list); // quando o findAll for chamado na service, ele irá retornar a lista (para simular consulta no bd)
+		when(repository.findAll()).thenReturn(list); 
 		
-		var people = service.findAll(); // chamando o findAll do service
+		var people = service.findAll();
 		
-		assertNotNull(people); // a lista não pode ser nula
-		assertEquals(14, people.size()); // a lista tem que ter tamanho igual 14
+		assertNotNull(people); 
+		assertEquals(14, people.size()); 
 		
-		// verificar dados da pessoa 1
 		var personOne = people.get(1);
 		
 		assertNotNull(personOne);
@@ -170,8 +168,7 @@ public class PersonServiceTests {
 		assertEquals("First Name Test1", personOne.getFirstName());
 		assertEquals("Last Name Test1", personOne.getLastName());
 		assertEquals("Female", personOne.getGender());
-		
-		// verificar dados da pessoa 4
+
 		var personFour = people.get(4);
 		
 		assertNotNull(personFour);
@@ -183,8 +180,7 @@ public class PersonServiceTests {
 		assertEquals("First Name Test4", personFour.getFirstName());
 		assertEquals("Last Name Test4", personFour.getLastName());
 		assertEquals("Male", personFour.getGender());
-		
-		// verificar dados da pessoa 7
+
 		var personSeven = people.get(7);
 		
 		assertNotNull(personSeven);
