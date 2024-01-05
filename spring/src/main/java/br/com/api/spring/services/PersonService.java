@@ -10,6 +10,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import br.com.api.spring.controllers.PersonController;
+import br.com.api.spring.exceptions.RequiredObjectIsNullException;
 import br.com.api.spring.exceptions.ResourceNotFoundException;
 import br.com.api.spring.mapper.DozerMapper;
 import br.com.api.spring.models.PersonModel;
@@ -25,15 +26,21 @@ public class PersonService {
     private PersonRepository perRep;
 
     public PersonVO create(PersonVO person) { 
+
+        if (person == null) throw new RequiredObjectIsNullException(); // chamando nova validação para caso o obj seja nulo
+
         logger.info("Creating one person!");
 
         var entity = DozerMapper.parseObject(person, PersonModel.class); 
         var vo = DozerMapper.parseObject(perRep.save(entity), PersonVO.class); 
-        vo.add(linkTo(methodOn(PersonController.class).findById(vo.getKey())).withSelfRel()); // add hateoas
+        vo.add(linkTo(methodOn(PersonController.class).findById(vo.getKey())).withSelfRel()); 
         return vo;
     }
 
     public PersonVO update(PersonVO person) { 
+
+        if (person == null) throw new RequiredObjectIsNullException(); // nova validação
+
         logger.info("Updating one person!");
 
         var entity = perRep.findById(person.getKey()) 
@@ -45,7 +52,7 @@ public class PersonService {
         entity.setGender(person.getGender());
 
         var vo = DozerMapper.parseObject(perRep.save(entity), PersonVO.class); 
-        vo.add(linkTo(methodOn(PersonController.class).findById(vo.getKey())).withSelfRel()); // add hateoas
+        vo.add(linkTo(methodOn(PersonController.class).findById(vo.getKey())).withSelfRel()); 
         return vo;
     }
 
@@ -62,9 +69,9 @@ public class PersonService {
         logger.info("Finding all people!");
 
         var persons = DozerMapper.parseListObjects(perRep.findAll(), PersonVO.class); 
-        persons // percorrer a lista de pessoas e adicionar o link em cada uma
+        persons
             .stream()
-            .forEach(p -> p.add(linkTo(methodOn(PersonController.class).findById(p.getKey())).withSelfRel())); // add hateoas
+            .forEach(p -> p.add(linkTo(methodOn(PersonController.class).findById(p.getKey())).withSelfRel())); 
         return persons;
     }
 
