@@ -22,7 +22,7 @@ import com.github.dozermapper.core.Mapping;
 @JsonPropertyOrder({"id", "first_name", "last_name", "address", "gender"}) 
 public class PersonVO extends RepresentationModel<PersonVO> implements Serializable { 
 
-    @JsonProperty("id") // para no json vir como id e não key
+    @JsonProperty("id") 
     @Mapping("id") 
     private Long key; 
 
