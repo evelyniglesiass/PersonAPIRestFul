@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-//@CrossOrigin // se não definirmos nada iremos permitir todas requisições (podemos definir IP ou host)
 @RestController
 @RequestMapping("/api/person/v1")
 @Tag(name = "People", description = "Endpoints for Managing people") 
@@ -35,7 +34,7 @@ public class PersonController {
     @Autowired
     private PersonService perSer;
    
-	@CrossOrigin(origins = {"http://localhost:8080", "http://erudio.com.br"}) // definindo cross com mais origens
+	@CrossOrigin(origins = {"http://localhost:8080", "http://erudio.com.br"}) 
     @PostMapping(consumes = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML}, 
         produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML}) 
     @Operation(summary = "Adds a new Person",
@@ -111,7 +110,7 @@ public class PersonController {
         return perSer.findAll();
     }
 
-	@CrossOrigin(origins = "http://localhost:8080") // definir as origens (permite acesso apenas para essa origem definida)
+	@CrossOrigin(origins = "http://localhost:8080") 
     @GetMapping(value = "/{id}",
         produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML}) 
     @Operation(summary = "Finds a Person", description = "Finds a Person",
