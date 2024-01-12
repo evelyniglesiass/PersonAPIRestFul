@@ -15,10 +15,10 @@ import br.com.api.spring.Serialization.Converter.YamlJackson2HttpMesageConverter
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    private static final MediaType MEDIA_TYPE_YML = MediaType.valueOf("application/x-yaml"); 
+    private static final MediaType MEDIA_TYPE_APPLICATION_YML = MediaType.valueOf("application/x-yaml"); 
     
-    @Value("${cors.originPatterns:default}") // vai ler o application.yml e aplicar nesse obj
-    private String corsOriginPatterns = ""; // vai ser o default caso não tenha no application.yml
+    @Value("${cors.originPatterns:default}") 
+    private String corsOriginPatterns = "";
     
     @Override
     public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
@@ -28,11 +28,11 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         var allowedOrigins = corsOriginPatterns.split(",");
-        registry.addMapping("/**") // para todas as rotas da api
-			//.allowedMethods("GET", "POST", "PUT") // para permitir para verbos especificos
-			.allowedMethods("*") // para permitir para todos metodos/verbos
-			.allowedOrigins(allowedOrigins) // passar o array que foi splitado separando as urls a partir de ,
-		.allowCredentials(true); // possibilitar autenticação
+        registry.addMapping("/**") 
+			//.allowedMethods("GET", "POST", "PUT")
+			.allowedMethods("*") 
+			.allowedOrigins(allowedOrigins) 
+		.allowCredentials(true); 
     }
 
     @Override
@@ -43,7 +43,7 @@ public class WebConfig implements WebMvcConfigurer {
             .defaultContentType(MediaType.APPLICATION_JSON) 
                 .mediaType("json", MediaType.APPLICATION_JSON) 
                 .mediaType("xml", MediaType.APPLICATION_XML)
-                .mediaType("x-yaml", MEDIA_TYPE_YML);
+                .mediaType("x-yaml", MEDIA_TYPE_APPLICATION_YML);
     }
 
 }
