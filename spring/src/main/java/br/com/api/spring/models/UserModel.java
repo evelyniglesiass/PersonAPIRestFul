@@ -35,7 +35,7 @@ public class UserModel implements UserDetails, Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name = "user_name", unique = true) // username é unico (não pode se repetir)
+	@Column(name = "user_name", unique = true) 
 	private String userName;
 	
 	@Column(name = "full_name")
@@ -56,13 +56,13 @@ public class UserModel implements UserDetails, Serializable {
 	@Column(name = "enabled")
 	private Boolean enabled;
 	
-	@ManyToMany(fetch = FetchType.EAGER) // mapeamento N:N / eager = assim que eu carregar o user eu tb vou carregar a permissions dele
-	@JoinTable(name = "user_permission", joinColumns = {@JoinColumn (name = "id_user")}, // definindo tabela intermediária / name = nome da tabela / joinColumns e inverseJoinColumns = chaves estrangeiras 
+	@ManyToMany(fetch = FetchType.EAGER) 
+	@JoinTable(name = "user_permission", joinColumns = {@JoinColumn (name = "id_user")}, 
 		inverseJoinColumns = {@JoinColumn (name = "id_permission")}
 	)
-	private List<PermissionModel> permissions; // lista de permissões que um user pode ter
+	private List<PermissionModel> permissions; 
 
-	public List<String> getRoles() { // método que retorna as permissions do user (QUEBRA DE CONVENÇÃO que precisa ser immplementada por conta do userDetails)
+	public List<String> getRoles() { 
 		List<String> roles = new ArrayList<>();
 		for (PermissionModel permission : permissions) {
 			roles.add(permission.getDescription());
@@ -70,7 +70,6 @@ public class UserModel implements UserDetails, Serializable {
 		return roles;
 	}
 
-    // métodos necessários para userDetails
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return this.permissions;
@@ -106,7 +105,6 @@ public class UserModel implements UserDetails, Serializable {
 		return this.enabled;
 	}
 
-    // hash
 	@Override
 	public int hashCode() {
 		final int prime = 31;

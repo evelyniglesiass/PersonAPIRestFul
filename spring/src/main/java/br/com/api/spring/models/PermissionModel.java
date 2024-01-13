@@ -31,7 +31,7 @@ public class PermissionModel implements GrantedAuthority, Serializable {
 	private String description;
 
     @Override
-    public String getAuthority() { // precisamos deste método por causa do GrantedAuthority 
+    public String getAuthority() { 
         return this.description;
     }
 
