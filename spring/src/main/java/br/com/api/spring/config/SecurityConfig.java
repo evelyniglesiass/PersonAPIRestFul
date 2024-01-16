@@ -7,57 +7,70 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
+import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder.SecretKeyFactoryAlgorithm;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import br.com.api.spring.security.jwt.JwtConfigurer;
+import br.com.api.spring.security.jwt.JwtTokenFilter;
 import br.com.api.spring.security.jwt.JwtTokenProvider;
 
+@EnableWebSecurity 
 @Configuration
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
 
 	@Autowired
 	private JwtTokenProvider tokenProvider;
 	
 	@Bean
-	public PasswordEncoder passwordEncoder() { // vai dizer pro spring como ele vai encriptar as senhas para poder fazer a comparação com o banco
-		Map<String, PasswordEncoder> encoders = new HashMap<>();
-		encoders.put("pbkdf2", new Pbkdf2PasswordEncoder()); // cria um encoder e seta o pbkdf2
+	PasswordEncoder passwordEncoder() {
+		Map<String, PasswordEncoder> encoders = new HashMap<>(); 
+				
+		Pbkdf2PasswordEncoder pbkdf2Encoder = new Pbkdf2PasswordEncoder("", 8, 185000, SecretKeyFactoryAlgorithm.PBKDF2WithHmacSHA256);
+		encoders.put("pbkdf2", pbkdf2Encoder); 
 		DelegatingPasswordEncoder passwordEncoder = new DelegatingPasswordEncoder("pbkdf2", encoders);
-		passwordEncoder.setDefaultPasswordEncoderForMatches(new Pbkdf2PasswordEncoder());
-		return passwordEncoder; 
+		passwordEncoder.setDefaultPasswordEncoderForMatches(pbkdf2Encoder);
+		return passwordEncoder;
 	}
+	
+    @Bean
+    AuthenticationManager authenticationManagerBean( 
+    		AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 
-	@Bean
-	@Override
-	public AuthenticationManager authenticationManagerBean() throws Exception { // é necessário para subir a aplicação
-		return super.authenticationManagerBean();
-	}
-
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http
-			.httpBasic().disable() // desabilitar a autenticação basic
-			.csrf().disable()
-			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // significa que a nossa sessã não vai armazenar estado
-				.and()
-					.authorizeRequests() // para que seja necesário autorização a cada request
-					.antMatchers( // urls permitidas
-							"/auth/signin", // login
-							"/auth/refresh", // refreh
-							"/api-docs/**", // para acessar as páginas do swagger
-							"/swagger-ui.html**" // para acessar as páginas do swagger
-						).permitAll()
-					.antMatchers("/api/**").authenticated() // para acessar essa url será necessário estar autenticado
-					.antMatchers("/users").denyAll() // negar todo mundo para acesso em users / pois dependendo da versão o spring pode expor o users e explanar dados
-				.and()
-					.cors() // permitir cors
-				.and()
-				.apply(new JwtConfigurer(tokenProvider));
-	}
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        
+        JwtTokenFilter customFilter = new JwtTokenFilter(tokenProvider);
+        
+        //@formatter:off 
+        return http
+            .httpBasic(basic -> basic.disable()) 
+            .csrf(csrf -> csrf.disable())
+            .addFilterBefore(customFilter, UsernamePasswordAuthenticationFilter.class) 
+                .sessionManagement(
+            		session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(
+                    authorizeHttpRequests -> authorizeHttpRequests
+                        .requestMatchers(
+							"/auth/signin",
+							"/auth/refresh/**",
+                    		"/swagger-ui/**",
+                    		"/v3/api-docs/**"
+                		).permitAll()
+                        .requestMatchers("/api/**").authenticated() 
+                        .requestMatchers("/users").denyAll()
+                )
+            .cors(cors -> {}) 
+                .build();
+        //@formatter:on
+    }
 }
-
