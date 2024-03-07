@@ -1,4 +1,4 @@
-package br.com.api.spring.vo.v1.security;
+package br.com.api.spring.integrationtests.vo;
 
 import java.io.Serializable;
 

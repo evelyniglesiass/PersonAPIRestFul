@@ -53,15 +53,15 @@ public class JwtTokenProvider {
 	}
 
 	
-	public TokenVO refreshToken(String refreshToken) {
-		if (refreshToken.contains("Bearer ")) refreshToken =
-				refreshToken.substring("Bearer ".length());
+	public TokenVO refreshToken(String refreshToken) { // atualiza o token
+		if (refreshToken.contains("Bearer ")) // se conter essa string
+			refreshToken = refreshToken.substring("Bearer ".length()); // irá recorta-la e pegar apenas o token
 		
-		JWTVerifier verifier = JWT.require(algorithm).build();
-		DecodedJWT decodedJWT = verifier.verify(refreshToken);
-		String username = decodedJWT.getSubject();
-		List<String> roles = decodedJWT.getClaim("roles").asList(String.class);
-		return createAccessToken(username, roles);
+		JWTVerifier verifier = JWT.require(algorithm).build(); // decodificar o token
+		DecodedJWT decodedJWT = verifier.verify(refreshToken); //verificar o token 
+		String username = decodedJWT.getSubject(); // obter o username do refreshToken
+		List<String> roles = decodedJWT.getClaim("roles").asList(String.class); // obter os roles do user do refreshToken
+		return createAccessToken(username, roles); // retornar a criação do AcessToken
 	}
 	
 	private String getAccessToken(String username, List<String> roles, Date now, Date validity) {

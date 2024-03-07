@@ -8,10 +8,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import br.com.api.spring.configs.TestConfigs;
 
-import br.com.api.spring.integrationtests.testcontainer.AbstractIntegrationTests;
+import br.com.api.spring.integrationtests.testcontainer.AbstractIntegrationTest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class SwaggerIntegrationTests extends AbstractIntegrationTests{
+public class SwaggerIntegrationTests extends AbstractIntegrationTest{
 
 	@Test
 	public void shouldDisplaySwaggerUiPage() {

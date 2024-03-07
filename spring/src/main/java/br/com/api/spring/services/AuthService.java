@@ -49,11 +49,11 @@ public class AuthService {
 	
 	@SuppressWarnings("rawtypes")
 	public ResponseEntity refreshToken(String username, String refreshToken) {
-		var user = repository.findByUsername(username);
+		var user = repository.findByUsername(username); // procurar o user no banco de dados
 		
-		var tokenResponse = new TokenVO();
+		var tokenResponse = new TokenVO(); 
 		if (user != null) {
-			tokenResponse = tokenProvider.refreshToken(refreshToken);
+			tokenResponse = tokenProvider.refreshToken(refreshToken); // criando o refreshToken
 		} else {
 			throw new UsernameNotFoundException("Username " + username + " not found!");
 		}
