@@ -46,27 +46,27 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
 	}
 	
 	@Test
-	@Order(0) // zero pois precisa ser o primeiro teste a ser executado
+	@Order(0) 
 	public void authorization() throws JsonMappingException, JsonProcessingException {
 		
-		AccountCredentialsVO user = new AccountCredentialsVO("leandro", "admin123"); // user que irá logar
+		AccountCredentialsVO user = new AccountCredentialsVO("leandro", "admin123"); 
 		
 		var accessToken = given()
-				.basePath("/auth/signin") // path que usamos para fazer o login
-					.port(TestConfigs.SERVER_PORT) // porta que iremos usar
+				.basePath("/auth/signin") 
+					.port(TestConfigs.SERVER_PORT) 
 					.contentType(TestConfigs.CONTENT_TYPE_JSON) 
-				.body(user) // passar o user
+				.body(user) 
 					.when()
 				.post()
 					.then()
 						.statusCode(200)
 							.extract()
 							.body()
-								.as(TokenVO.class) // extrair o body como um obj (podemos fazer isso pois o obj não tem nenhum atributo desconhecido, ele é exatamente igual ao TokenVO que existe na aplicaçõa)
-							.getAccessToken(); // obtendo o token
+								.as(TokenVO.class) 
+							.getAccessToken(); 
 		
 		specification = new RequestSpecBuilder()
-				.addHeader(TestConfigs.HEADER_PARAM_AUTHORIZATION, "Bearer " + accessToken) // passar o token no authorizations
+				.addHeader(TestConfigs.HEADER_PARAM_AUTHORIZATION, "Bearer " + accessToken) 
 				.setBasePath("/api/person/v1")
 				.setPort(TestConfigs.SERVER_PORT)
 					.addFilter(new RequestLoggingFilter(LogDetail.ALL))
@@ -79,11 +79,9 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
 	public void testCreate() throws JsonMappingException, JsonProcessingException {
 		mockPerson();
 
-		// APLICAR A TODOS OS TESTES ABAIXO excluir o specification e colocar direto no given (utilizando o que criamos no test de autenticação)
-		
 		var content = given().spec(specification)
 				.contentType(TestConfigs.CONTENT_TYPE_JSON)
-					.header(TestConfigs.HEADER_PARAM_ORIGIN, TestConfigs.ORIGIN_ERUDIO) // APLICAR A TODOS OS TESTES ABAIXO pegar o header que tinha no specification e add o header direto aqui
+					.header(TestConfigs.HEADER_PARAM_ORIGIN, TestConfigs.ORIGIN_ERUDIO) 
 					.body(person)
 					.when()
 					.post()

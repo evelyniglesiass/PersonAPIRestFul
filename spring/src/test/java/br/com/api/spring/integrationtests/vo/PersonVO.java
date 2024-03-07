@@ -1,7 +1,6 @@
 package br.com.api.spring.integrationtests.vo;
 
 import java.io.Serializable;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PersonVO implements Serializable {

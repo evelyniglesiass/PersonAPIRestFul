@@ -37,18 +37,17 @@ public class AuthController {
 	
 	@SuppressWarnings("rawtypes")
 	@Operation(summary = "Refresh token for authenticated user and returns a token")
-	@PutMapping(value = "/refresh/{username}") // put pois é uma atualização
+	@PutMapping(value = "/refresh/{username}") 
 	public ResponseEntity refreshToken(@PathVariable("username") String username,
-			@RequestHeader("Authorization") String refreshToken) { // request header para pegar o Authorization da header e obter o refreshToken atual
+			@RequestHeader("Authorization") String refreshToken) { 
 		if (checkIfParamsIsNotNull(username, refreshToken))
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!"); // forbidden caso algum parametro seja nulo
-		var token = authService.refreshToken(username, refreshToken); // chamar o service para gerar o refreshToken
-		if (token == null) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!"); // erro caso o token seja nulo
-		return token; // retornar o token
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!"); 
+		var token = authService.refreshToken(username, refreshToken); 
+		if (token == null) return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid client request!"); 
+		return token; 
 	}
 
-	// podemos colocar esses métodos no service
-	private boolean checkIfParamsIsNotNull(String username, String refreshToken) { // verificar se os parametros recebidos são nulosd
+	private boolean checkIfParamsIsNotNull(String username, String refreshToken) { 
 		return refreshToken == null || refreshToken.isBlank() ||
 				username == null || username.isBlank();
 	}

@@ -27,7 +27,7 @@ public class PersonService {
 
     public PersonVO create(PersonVO person) { 
 
-        if (person == null) throw new RequiredObjectIsNullException(); // chamando nova validação para caso o obj seja nulo
+        if (person == null) throw new RequiredObjectIsNullException(); 
 
         logger.info("Creating one person!");
 
@@ -39,7 +39,7 @@ public class PersonService {
 
     public PersonVO update(PersonVO person) { 
 
-        if (person == null) throw new RequiredObjectIsNullException(); // nova validação
+        if (person == null) throw new RequiredObjectIsNullException(); 
 
         logger.info("Updating one person!");
 

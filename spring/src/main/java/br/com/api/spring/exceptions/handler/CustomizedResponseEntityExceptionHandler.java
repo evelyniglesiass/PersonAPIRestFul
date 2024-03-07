@@ -47,7 +47,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     }
 
     @ExceptionHandler(RequiredObjectIsNullException.class)
-    public final ResponseEntity<ExceptionResponse> // método para tratar o novo tipo de exceção
+    public final ResponseEntity<ExceptionResponse> 
         handleBadRequestException(Exception ex, WebRequest request) {
         
         ExceptionResponse exceptionResponse = new ExceptionResponse( 
@@ -60,7 +60,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     }
 
     @ExceptionHandler(InvalidJwtAuthenticationException.class)
-	public final ResponseEntity<ExceptionResponse> handleInvalidJwtAuthenticationExceptions( // handler da nova exception
+	public final ResponseEntity<ExceptionResponse> handleInvalidJwtAuthenticationExceptions( 
 			Exception ex, WebRequest request) {
 		
 		ExceptionResponse exceptionResponse = new ExceptionResponse(
@@ -68,7 +68,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 				ex.getMessage(),
 				request.getDescription(false));
 		
-		return new ResponseEntity<>(exceptionResponse, HttpStatus.FORBIDDEN); // retorna um forbidden
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.FORBIDDEN); 
 	}
 
 }
