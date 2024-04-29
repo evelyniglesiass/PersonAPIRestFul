@@ -25,6 +25,12 @@ intuito de colocar em prática todos os tópicos estudados no Curso.
 - Versionamento de API's
 - Migrations com Flyway
 - Custom JSON Serialization
+- Content Negotiation
+- HATEOAS
+- Swagger (Open API)
+- Configurações de CORS
+- Autenticação com JWT e Spring Security
+- Testes com Rest Assured, Testcontainers e JUnit5
 - ...
 
 ## 🛠️ Tecnologias utilizadas:
