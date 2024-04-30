@@ -16,6 +16,7 @@ import br.com.api.spring.mapper.DozerMapper;
 import br.com.api.spring.models.PersonModel;
 import br.com.api.spring.repository.PersonRepository;
 import br.com.api.spring.vo.v1.PersonVO;
+import jakarta.transaction.Transactional;
 
 @Service
 public class PersonService {
@@ -55,6 +56,20 @@ public class PersonService {
         vo.add(linkTo(methodOn(PersonController.class).findById(vo.getKey())).withSelfRel()); 
         return vo;
     }
+
+    @Transactional 
+	public PersonVO disablePerson(Long id) {
+		
+		logger.info("Disabling one person!");
+		
+		perRep.disablePerson(id); 
+		
+		var entity = perRep.findById(id) 
+			.orElseThrow(() -> new ResourceNotFoundException("No records found for this ID!")); 
+		var vo = DozerMapper.parseObject(entity, PersonVO.class);
+		vo.add(linkTo(methodOn(PersonController.class).findById(id)).withSelfRel());
+		return vo; 
+	}
 
     public void delete(Long id) { 
         logger.info("Deleting one person!");
