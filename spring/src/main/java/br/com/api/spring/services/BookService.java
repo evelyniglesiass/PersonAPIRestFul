@@ -4,6 +4,11 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -16,6 +21,7 @@ import br.com.api.spring.mapper.DozerMapper;
 import br.com.api.spring.models.BookModel;
 import br.com.api.spring.repository.BookRepository;
 import br.com.api.spring.vo.v1.BookVO;
+import br.com.api.spring.vo.v1.PersonVO;
 
 @Service
 public class BookService {
@@ -24,6 +30,10 @@ public class BookService {
 
     @Autowired
     private BookRepository booRep;
+
+    @Autowired
+    private PagedResourcesAssembler<BookVO> assembler; // inteligente o suficiente para adicionar os links HATEOAS na aplicação
+
 
     public BookVO create(BookVO book) { 
 
@@ -65,14 +75,24 @@ public class BookService {
         booRep.delete(entity); 
     }
 
-    public List<BookVO> findAll() { 
+    public PagedModel<EntityModel<BookVO>> findAll(Pageable pageable) { // alterar o tipo de retorno de dado que suporta a paginação e adicionar o novo parâmetro
         logger.info("Finding all books!");
 
-        var books = DozerMapper.parseListObjects(booRep.findAll(), BookVO.class); 
-        books
-            .stream()
-            .forEach(b -> b.add(linkTo(methodOn(BookController.class).findById(b.getKey())).withSelfRel())); 
-        return books;
+        var bookPage = booRep.findAll(pageable); // pesquisar no banco de acordo com a paginação requisitada
+
+        var bookVosPage = bookPage.map(b -> DozerMapper.parseObject(b, BookVO.class)); 
+        bookVosPage.map( // criando um link HATEOAS para cada book retornado
+            b -> b.add(
+                linkTo(methodOn(BookController.class) 
+                    .findById(b.getKey())).withSelfRel()));
+        
+        Link link = linkTo( // cria o link HATEOAS incluindo os parâmetros dee paginação
+            methodOn(BookController.class)
+                .findAll(pageable.getPageNumber(),
+                        pageable.getPageSize(),
+                        "asc")).withSelfRel();
+        
+        return assembler.toModel(bookVosPage, link); // retorna os dados, juntamente om os links HATEOAS
     }
 
     public BookVO findById(Long id) {
