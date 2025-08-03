@@ -1,7 +1,7 @@
 # Person: API RESTFul
 
 > [!IMPORTANT]
-> 🔧 Projeto em fase de desenvovimento!
+> 🔧 Projeto encerrado - projeto terá continuidade em um novo repositório com uma versão mais atualizada do curso!
 <br>
 
 Projeto desenvolvido durante o Curso REST API's RESTFul do 0 à AWS c. Spring Boot 3 Java e Docker ministrado pelo Professor [Leandro Costa](https://www.udemy.com/user/leandro-da-costa-goncalves/) com o 
